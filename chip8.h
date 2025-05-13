@@ -63,9 +63,92 @@ class Processor {
 		void emulationCycle() {
 
 			// Fetch opcode
+			opcode = memory[pc] << 8 | memory[pc+1];
 
+			switch(opcode & 0xF000){
 
-			// Translate opcode
+				case(0x0): 
+					switch(opcode & 0x0F00) {
+						case(0x0):
+							//...//
+					}
+					break;
+
+				case(0x1000):
+					pc = opcode & 0x0FFF;
+					break;
+
+				case(0x2000):
+					stack[sp] = pc;
+					sp++;
+					pc = opcode & 0x0FFF;
+					break;
+
+				case(0x3000): // 3XNN
+					int x = opcode & 0x0F00;
+					int n = opcode & 0x00FF;
+
+					if (V[x] == n) {
+						pc+= 4;
+					}
+					break;
+				
+				case(0x4000):
+					short int x = opcode & 0x0F00;
+					short int n = opcode & 0x00FF;
+
+					if (V[x] != n) {
+						pc += 4;
+					}
+					break;
+
+				case(0x5000):
+					short int x = opcode & 0x0F00;
+					short int y = opcode & 0x00F0;
+
+					if (V[x] == V[y]) {
+						pc+=4;
+					}
+					break;
+
+				case(0x6000):
+					V[opcode & 0x0F00] = 0x00FF;
+					break;
+
+				case(0x7000):
+					V[opcode & 0x0F00] += 0x00FF;
+					break;
+
+				case(0x8000):
+					short int x = opcode & 0x0F00;
+					short int y = opcode & 0x00F0;
+
+					switch(opcode & 0x000F) {
+
+						case(0x0000):
+							V[x] = V[y];
+							break;
+						case(0x0001):
+							V[x] = V[x] | V[y];
+							break;
+						case(0x0002):
+							V[x] = V[x] & V[y];
+							break;
+						case(0x0003):
+							V[x] = V[x] ^ V[y];
+							break;
+						case(0x0004): // ***TODO:Adjust both += and -= cases for over and underflow.
+							V[x] += V[y];
+							break;
+						case(0x0005):
+							V[x] -= V[y];
+							break;
+						case(0x0006):
+							
+							
+					}
+					
+			}
 
 
 			// Execute opcode
