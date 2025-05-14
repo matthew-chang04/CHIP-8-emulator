@@ -137,7 +137,7 @@ class Processor {
 						case(0x0003):
 							V[x] = V[x] ^ V[y];
 							break;
-						case(0x0004): // ***TODO:Adjust both += and -= cases for over and underflow.
+						case(0x0004): // ***TODO:Adjust both += and -= cases for over and under flow.
 							V[x] += V[y];
 							break;
 						case(0x0005):
