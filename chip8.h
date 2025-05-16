@@ -39,8 +39,8 @@ class Processor {
 		uint8_t display[64 * 32];
 		uint8_t key[16];
 
-		void initialize() {
-			
+		Processor()
+		{	
 			std::fill(std::begin(memory), std::end(memory), 0);
 			std::fill(std::begin(stack), std::end(stack), 0);
 			std::fill(std::begin(V), std::end(V), 0);
@@ -56,8 +56,6 @@ class Processor {
 				memory[mc] = chip8_fontset[i];
 				mc++;
 			}
-
-
 		}
 
 		void emulationCycle() {
@@ -138,14 +136,28 @@ class Processor {
 							V[x] = V[x] ^ V[y];
 							break;
 						case(0x0004): // ***TODO:Adjust both += and -= cases for over and under flow.
+							uint8_t temp = V[x];	
 							V[x] += V[y];
+							V[0xF] = (V[x] < temp) ? 1 : 0;
 							break;
 						case(0x0005):
+							uint8_t temp = V[x];
+							V[0xF] = (V[y] > V[x]) ? 1 : 0;
 							V[x] -= V[y];
 							break;
 						case(0x0006):
-							
-							
+							V[0xF] = V[x] & 0x1;
+							V[x] = V[x] >> 1;
+							break;
+						case(0x0007):
+							uint8_t temp = V[x];
+							V[0xF] = (V[x] > V[y]) ? 1 : 0;
+							V[x] = V[y] - V[x];
+							break;
+						case(0x000E):
+							V[0xF] = (V[x] & 0x80 == 0x80) ? 1 : 0;
+							V[x] = V[x] << 1;
+							break;
 					}
 					
 			}
