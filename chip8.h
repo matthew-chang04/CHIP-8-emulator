@@ -1,5 +1,7 @@
 #include <fstream>
 #include <iostream>
+#include <cstdlib>
+#include <ctime>
 
 unsigned char chip8_fontset[80] =
 { 
@@ -158,8 +160,44 @@ class Processor {
 							V[0xF] = (V[x] & 0x80 == 0x80) ? 1 : 0;
 							V[x] = V[x] << 1;
 							break;
+						default:
+							break;
 					}
+
+				case(0x9000):
+
+					if (V[x] != V[y]) {
+						pc += 4;
+					}
+					break;
+
+				case(0xA000):
+
+					I = opcode & 0x0FFF;
+					break;
+
+				case(0xB000):
+					pc = (opcode & 0x0FFF) + V[0];
+					break;
+
+				case(0xC000):
+
+					std::random_device rnd;
+					std::mt19937 gen(rnd());
+					std::uniform_int_distribution<> dist(0,255);
+
+					uint8_t num = static_cast<uint8_t>(dist(gen));
+					uint8_t x = opcode & 0x0F00;
+					unsigned int NN = opcode & 0x00FF;
+
+					V[x] = num & NN;
+
+					break;
+
+				case(0xD000):
 					
+
+
 			}
 
 
