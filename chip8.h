@@ -1,7 +1,7 @@
 #include <fstream>
 #include <iostream>
-#include <cstdlib>
-#include <ctime>
+#include <random>
+
 
 unsigned char chip8_fontset[80] =
 { 
@@ -90,6 +90,8 @@ class Processor {
 
 					if (V[x] == n) {
 						pc+= 4;
+					} else {
+						pc += 2;
 					}
 					break;
 				
@@ -99,6 +101,8 @@ class Processor {
 
 					if (V[x] != n) {
 						pc += 4;
+					} else {
+						pc += 2;
 					}
 					break;
 
@@ -108,15 +112,21 @@ class Processor {
 
 					if (V[x] == V[y]) {
 						pc+=4;
+					} else {
+						pc += 2;
 					}
 					break;
 
 				case(0x6000):
 					V[opcode & 0x0F00] = 0x00FF;
+
+					pc += 2;
 					break;
 
 				case(0x7000):
 					V[opcode & 0x0F00] += 0x00FF;
+
+					pc += 2;
 					break;
 
 				case(0x8000):
@@ -137,7 +147,7 @@ class Processor {
 						case(0x0003):
 							V[x] = V[x] ^ V[y];
 							break;
-						case(0x0004): // ***TODO:Adjust both += and -= cases for over and under flow.
+						case(0x0004): 
 							uint8_t temp = V[x];	
 							V[x] += V[y];
 							V[0xF] = (V[x] < temp) ? 1 : 0;
@@ -164,20 +174,28 @@ class Processor {
 							break;
 					}
 
+					pc += 2;
+
 				case(0x9000):
 
 					if (V[x] != V[y]) {
 						pc += 4;
+					} else {
+						pc += 2;
 					}
 					break;
 
 				case(0xA000):
 
 					I = opcode & 0x0FFF;
+
+					pc += 2;
 					break;
 
 				case(0xB000):
 					pc = (opcode & 0x0FFF) + V[0];
+
+					pc += 2;
 					break;
 
 				case(0xC000):
@@ -192,10 +210,105 @@ class Processor {
 
 					V[x] = num & NN;
 
+					pc += 2;
 					break;
 
 				case(0xD000):
 					
+					uint8_t x = (opcode & 0x0F00) >> 8;
+					uint8_t y = (opcode & 0x00F0) >> 4;
+
+					uint8_t n = (opcode & 0x000F);
+
+					uint8_t xPos = V[x];
+					uint8_t yPos = V[y];
+
+					V[0xF] = 0;
+
+
+					for (int row = 0; row < n; row++) {
+						uint8_t spriteRow = memory[I + row];
+
+						for (int col = 0; col < 8; col++) {
+
+							if (spriteRow & (0x80 >> col) != 0) {
+
+								int xPix = xPos +col;
+								int yPix = yPos + row;
+
+								if (display[yPix][xPix] == 1) {
+									V[0xF] = 1;
+								}
+
+								display[yPix][xPix] ^= 1;
+							}	
+						}
+					}
+
+					pc += 2;
+					break;
+
+				case(0xE000):
+
+					switch(opcode & 0x00F0) {
+						uint8_t x = opcode & 0x0F00;
+
+						case(0x0090):
+							if (V[x] & 0x0F) {
+								pc += 4;
+							} else {
+								pc += 2;
+							}
+							break;
+
+						case(0x00A0):
+							
+							if (!V[x] & 0x0F) {
+								pc += 4;
+							} else {
+								pc += 2;
+							}
+							break;
+					}
+					break;
+
+				case(0xF000):
+
+					switch(opcode & 0x00FF) {
+
+						uint8_t x = opcode & 0x0F00;
+
+						case(0x0007):
+							V[x] = delay_timer;
+							break;
+
+						case(0x000A):
+							V[x] = sound_timer;
+							break;
+
+						case(0x0015):
+							delay_timer = V[x];
+							break;
+
+						case(0x0018):
+							sound_timer = V[x];
+							break;
+
+						case(0x001E):
+							I += V[x];
+							break;
+
+						case(0x0029):	
+							I = 0x50 + (V[x] & 0x0F) *5;
+							break;
+
+						case(0x0033):
+							
+
+							
+					}
+
+				
 
 
 			}
