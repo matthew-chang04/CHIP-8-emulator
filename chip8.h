@@ -299,25 +299,32 @@ class Processor {
 							break;
 
 						case(0x0029):	
-							I = 0x50 + (V[x] & 0x0F) *5;
+							I = 0x50 + (V[x] & 0x0F) * 5;
 							break;
 
 						case(0x0033):
-							
+							uint8_t val = V[x];
 
+							memory[I] = val / 100;
+							memory[I + 1] = (val / 10) % 10;
+							memory[I + 2] = val % 10;
+
+							break;
+						case(0x0055):
 							
+							for (int i = 0; i <= x; i++) {
+								memory[I + i] = V[i];
+							}
+							break;
+
+						case(0x0065):
+							
+							for (int i = 0; i <= x; i++) {
+								V[i] = memory[I + i];
+							}
+							break;
 					}
-
-				
-
-
 			}
-
-
-			// Execute opcode
-
-
-			// Update Timers
 		}
 
 		bool loadGame(std::string& file) {
