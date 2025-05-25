@@ -14,7 +14,7 @@ Chip8::Chip8() {
 	sp = 0;
 	I = 0;
 	p = 0x200;
-
+	
 	uint8_t mc = 0x50;
 	for (int i = 0; i < 80; i++) {
 		memory[mc] = chip8_fontset[i];
