@@ -24,7 +24,7 @@ unsigned char chip8_fontset[80] =
 };
 
 class Processor {
-	public:
+	private:
 		unsigned short opcode;
 		uint8_t memory[4096];
 
@@ -39,15 +39,17 @@ class Processor {
 		uint8_t sound_timer;
 
 		uint8_t display[64 * 32];
+		bool draw; 
 		uint8_t key[16];
 
+	public:
 		Processor()
 		{	
 			std::fill(std::begin(memory), std::end(memory), 0);
 			std::fill(std::begin(stack), std::end(stack), 0);
 			std::fill(std::begin(V), std::end(V), 0);
 			std::fill(std::begin(key), std::end(key), 0);
-
+			draw = false;
 			opcode = 0;
 			sp = 0;
 			I = 0;
@@ -67,13 +69,25 @@ class Processor {
 
 			switch(opcode & 0xF000){
 
+
 				case(0x0): 
-					switch(opcode & 0x0F00) {
-						case(0x0):
-							//...//
+					switch(opcode) {
+						case(0x00E0):
+							std::fill(std::begin(display), std::end(display), 0);
+
+							draw = true;
+							pc += 2;
+							break;
+						case(0x00EE):
+							sp--;
+							pc = stack[sp];
+							break;
+						default: // 0x0NNN
+							std::cout << "Unsupported Opcode '0NNN'";
+							pc += 2;
+							break;
 					}
 					break;
-
 				case(0x1000):
 					pc = opcode & 0x0FFF;
 					break;
@@ -170,11 +184,9 @@ class Processor {
 							V[0xF] = (V[x] & 0x80 == 0x80) ? 1 : 0;
 							V[x] = V[x] << 1;
 							break;
-						default:
-							break;
 					}
-
 					pc += 2;
+					break;
 
 				case(0x9000):
 
@@ -245,6 +257,7 @@ class Processor {
 						}
 					}
 
+					draw = true;
 					pc += 2;
 					break;
 
