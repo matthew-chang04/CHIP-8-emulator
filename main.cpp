@@ -21,13 +21,30 @@ int main(int argc, char *argv[]) {
 		return -1;
 	}
 
-	SDL_Renderer *renderer = SDL_Renderer(display) // TODO: fix this please and finish the dispaly portuon
+
+	SDL_Renderer *renderer = SDL_Renderer(display, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+	
 
 	while(true) {
 
 		chip.emulationCycle();
+		//TODO: grind the drawing part of this, no need to handle any edge cases, just make sure the display is good.
+		if (chip.draw) {
+			int pixel_size = 10;
 
-		auto now = std::chrono::high_resolution_clock::ow();
+			for (int i = 0; i < 32; i++) {
+				for (int j = 0; j < 64; j++) {
+
+					if (chip.display[i][j] == 1) {
+						
+					}
+				}
+			}
+			
+		}
+
+			
+		auto now = std::chrono::high_resolution_clock::now();
 
 		auto diff = std::chrono::duration_cast<std::chrono::milliseconds>(now - last_update);
 
