@@ -35,8 +35,16 @@ int main(int argc, char *argv[]) {
 			for (int i = 0; i < 32; i++) {
 				for (int j = 0; j < 64; j++) {
 
+					SDL_Rect pixel = {
+						.h = pixel_size;
+						.w = pixel_size;
+						.x = i * 10;
+						.y = j * 10;
+					};
 					if (chip.display[i][j] == 1) {
-						
+						SDL_SetRenderDrawColor(renderer, 0,0,0, 255);
+					} else {
+						SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 					}
 				}
 			}
