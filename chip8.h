@@ -1,6 +1,8 @@
 #include <fstream>
 #include <iostream>
 #include <random>
+#include <array>
+
 
 unsigned char chip8_fontset[80] =
 { 
@@ -25,9 +27,9 @@ unsigned char chip8_fontset[80] =
 class Chip8 {
 	public:
 		unsigned short opcode;
-		uint8_t memory[4096];
+		std::array<uint8_t, 4096> memory;
 
-		uint8_t V[16];
+		std::array<uint8_t, 16>  V;
 
 		unsigned short I;
 		unsigned short p;
@@ -37,9 +39,9 @@ class Chip8 {
 		uint8_t delay_timer;
 		uint8_t sound_timer;
 
-		uint8_t display[64 * 32];
+		std::array<std::array<uint8_t, 32>, 64> display;
 		bool draw; 
-		uint8_t key[16];
+		std::array<uint8_t, 16> key;
 
 }
 
