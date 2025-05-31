@@ -25,23 +25,29 @@ unsigned char chip8_fontset[80] =
 };
 
 class Chip8 {
-	public:
+	private:
 		unsigned short opcode;
 		std::array<uint8_t, 4096> memory;
 
 		std::array<uint8_t, 16>  V;
 
 		unsigned short I;
-		unsigned short p;
-		uint16_t stack[16];
+		unsigned short pc;
+
+		std::stack<uint16_t, 16> stack;
 		uint16_t sp;
 
 		uint8_t delay_timer;
 		uint8_t sound_timer;
 
-		std::array<std::array<uint8_t, 32>, 64> display;
 		bool draw; 
 		std::array<uint8_t, 16> key;
 
+	public:
+
+		bool drawFlag() { return draw; }
+		std::array<std::array<uint8_t, 32>, 64> display;
+
+		bool loadProgram();
 }
 

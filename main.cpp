@@ -6,32 +6,71 @@
 
 #include "chip8.cpp"
 
+// each key mapped to the array index
+uint8_t keymap[16] = {
+	SDLK_x,
+	SDLK_1,
+	SDLK_2,
+	SDLK_3,
+	SDLK_q,
+	SDLK_w,
+	SDLK_e,
+	SDLK_a,
+	SDLK_s,
+	SDLK_d,
+	SDLK_z,
+	SDLK_c,
+	SDLK_4,
+	SDLK_r,
+	SDLK_f,
+	SDLK_v
+}
+
 int main(int argc, char *argv[]) {
 
 	if (argc != 2) {
 		std::cout << "ERROR: Usage: ./run <filename>";
+		return -2;
 	}
-
-	auto last_update = std::chrono::high_resolution_clock::now();
-
+	
+	// Set up chip and load specified file to memory
 	Chip8 chip(); 
 
 	std::string program = argv[1];
-	chip.loadProgram(program);
-
-	SDL_Window *display = SDL_CreateWindow("Welcome", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 320, SDL_WINDOW_SHOWN);
-	if (display == NULL) {
-		std::cout << "Error displaying output window";
+	if (chip.loadProgram(program)) { 
+		std::cout << "ERROR: " << program << " not recognised";
 		return -1;
 	}
 
+	// SDL display setup
+
+	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
+		std::cout << "ERROR: SDL Init Error";
+		return -5;
+	}
+
+	SDL_Window *display = SDL_CreateWindow("Welcome", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 320, SDL_WINDOW_SHOWN);
+	if (display == nullptr) {
+		std::cout << "Error displaying output window";
+		return -3;
+	}
+
 	SDL_Renderer *renderer = SDL_Renderer(display, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-	
+	if (renderer == nullptr) {
+		std::cout << "Error initializing renderer";
+		return -4;
+
+	}
+
 
 	while(true) {
 
 		chip.emulationCycle();
-		//TODO: grind the drawing part of this, no need to handle any edge cases, just make sure the display is good.
+
+	// TODO: Set up keyboard inputs using SDL_EVENT
+
+
+
 		if (chip.draw) {
 			int pixel_size = 10;
 
@@ -58,18 +97,10 @@ int main(int argc, char *argv[]) {
 			chip.draw = false;
 		}
 
-		
-		auto now = std::chrono::high_resolution_clock::now();
-		auto diff = std::chrono::duration_cast<std::chrono::milliseconds>(now - last_update);
+		if (delay_timer > 0) { delay_timer-- };
+		if (sound_timer > 0) { sound_timer-- };
 
-		if (diff.count() >= 16) { 
-
-			if (delay_timer > 0) delay_timer--;
-			if (sound_timer > 0) sound_timer--;
-
-			last_update = now;
-			
-		}
+		SDL_Delay(16);
 	}	
 }
 

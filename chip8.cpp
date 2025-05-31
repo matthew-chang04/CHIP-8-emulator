@@ -5,17 +5,22 @@
 #include "chip8.h"
 
 Chip8::Chip8() {
-	std::fill(std::begin(memory), std::end(memory), 0); 
-	std::fill(std::begin(stack), std::end(stack), 0);
-	std::fill(std::begin(V), std::end(V), 0);
-	std::fill(std::begin(key), std::end(key), 0);
 
-	opcode = 0;
-	sp = 0;
-	I = 0;
-	p = 0x200;
+	memory {};
+	stack {};
+	V {};
+	display {};
+	key {};
+
+	delay_timer {60};
+	sound_timer {60};
+
+	opcode {};
+	sp {};
+	I =	{};
+	pc {0x200};
 	
-	uint8_t mc = 0x50;
+	uint8_t mc {0x50};
 	for (int i = 0; i < 80; i++) {
 		memory[mc] = chip8_fontset[i];
 		mc++;
@@ -24,7 +29,7 @@ Chip8::Chip8() {
 
 void Chip8::emulationCycle() {
 
-	// Fetch opcode
+
 	opcode = memory[pc] << 8 | memory[pc+1];
 
 	switch(opcode & 0xF000){
@@ -46,7 +51,7 @@ void Chip8::emulationCycle() {
 			pc = opcode & 0x0FFF;
 			break;
 
-		case(0x3000): // 3XNN
+		case(0x3000): 
 			int x = opcode & 0x0F00;
 			int n = opcode & 0x00FF;
 
@@ -286,6 +291,9 @@ void Chip8::emulationCycle() {
 					}
 					break;
 			}
+
+			pc += 2;
+			break;
 	}
 }
 
