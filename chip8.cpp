@@ -29,7 +29,6 @@ Chip8::Chip8() {
 
 void Chip8::emulationCycle() {
 
-
 	opcode = memory[pc] << 8 | memory[pc+1];
 
 	switch(opcode & 0xF000){

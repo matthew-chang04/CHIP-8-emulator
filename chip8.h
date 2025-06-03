@@ -40,14 +40,15 @@ class Chip8 {
 		uint8_t delay_timer;
 		uint8_t sound_timer;
 
-		bool draw; 
+	publict
+
+		bool draw;
+
+		std::array<std::array<uint8_t, 32>, 64> display;
 		std::array<uint8_t, 16> key;
 
-	public:
-
-		bool drawFlag() { return draw; }
-		std::array<std::array<uint8_t, 32>, 64> display;
-
-		bool loadProgram();
+		bool loadProgram(std::string&);
+		Chip8();
+		void emulationCycle();
 }
 

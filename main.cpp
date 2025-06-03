@@ -6,8 +6,8 @@
 
 #include "chip8.cpp"
 
-// each key mapped to the array index
-uint8_t keymap[16] = {
+
+uint8_t keymap[] = {
 	SDLK_x,
 	SDLK_1,
 	SDLK_2,
@@ -25,6 +25,8 @@ uint8_t keymap[16] = {
 	SDLK_f,
 	SDLK_v
 }
+
+
 
 int main(int argc, char *argv[]) {
 
@@ -67,8 +69,32 @@ int main(int argc, char *argv[]) {
 
 		chip.emulationCycle();
 
-	// TODO: Set up keyboard inputs using SDL_EVENT
+		SDL_Event event;
 
+		while (SDL_PollEvent(&event)) {
+
+			if (event.type == SDL_QUIT) {
+				return 0;
+			} else if (event.type == SDL_Keydown) {
+
+				SDL_Keycode key = event.key.keysym.sym;
+
+				for (int i = 0; i < 16; i++) {
+					if (key == keymap[i]) {
+						chip8.key[i] = 1;
+					}
+				}
+			} else if (event.type ==SDL_Keyup) {
+
+				SDL_Keycode key = event.key.keysym.sym;
+
+				for (int i = 0; i < 16; i++) {
+					if (key == keymap[i]) {
+						chip8.key[i] = 0;
+					}
+				}
+			}
+		}
 
 
 		if (chip.draw) {
@@ -97,8 +123,8 @@ int main(int argc, char *argv[]) {
 			chip.draw = false;
 		}
 
-		if (delay_timer > 0) { delay_timer-- };
-		if (sound_timer > 0) { sound_timer-- };
+		if (chip.delay_timer > 0) { chip.delay_timer-- };
+		if (chip.sound_timer > 0) { chip.sound_timer-- };
 
 		SDL_Delay(16);
 	}	
