@@ -1,6 +1,6 @@
 #include <iostream>
 #include <chrono>
-#include <SDL2/SDL.h>
+#include </opt/homebrew/include/SDL2/SDL.h>
 #include <string>
 
 
