@@ -50,13 +50,22 @@ void Chip8::emulationCycle()
 	uint8_t temp;
 
 	switch(opcode & 0xF000){
-		case 0x00E0:
-			for (int i = 0; i < 32; i++) {
-				display[i].fill(0);
-			}
-			draw = true;
-			break;
+		case 0x0000:
+			
+			switch(opcode & 0x000F) {
 
+				case 0x0000:
+					for (int i = 0; i < 32; i++) {
+						display[i].fill(0);
+					}
+					draw = true;
+					break;
+
+				case 0x000E:	
+					pc = stack[sp];
+					sp--;	
+					break;
+			}
 		case 0x1000:
 			pc = opcode & 0x0FFF;
 			break;
