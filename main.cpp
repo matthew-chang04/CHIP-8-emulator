@@ -24,7 +24,7 @@ uint8_t keymap[] = {
 	SDLK_r,
 	SDLK_f,
 	SDLK_v
-}
+};
 
 
 
@@ -36,10 +36,10 @@ int main(int argc, char *argv[]) {
 	}
 	
 	// Set up chip and load specified file to memory
-	Chip8 chip(); 
+	Chip8 chip; 
 
 	std::string program = argv[1];
-	if (chip.loadProgram(program)) { 
+	if (!chip.loadProgram(program)) { 
 		std::cout << "ERROR: " << program << " not recognised";
 		return -1;
 	}
@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
 		return -3;
 	}
 
-	SDL_Renderer *renderer = SDL_Renderer(display, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+	SDL_Renderer *renderer = SDL_CreateRenderer(display, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	if (renderer == nullptr) {
 		std::cout << "Error initializing renderer";
 		return -4;
@@ -68,29 +68,28 @@ int main(int argc, char *argv[]) {
 	while(true) {
 
 		chip.emulationCycle();
-
+		
+		// Key pressed event handle
 		SDL_Event event;
 
 		while (SDL_PollEvent(&event)) {
 
 			if (event.type == SDL_QUIT) {
 				return 0;
-			} else if (event.type == SDL_Keydown) {
-
+			} else if (event.type == SDL_KEYDOWN) {
 				SDL_Keycode key = event.key.keysym.sym;
-
 				for (int i = 0; i < 16; i++) {
 					if (key == keymap[i]) {
-						chip8.key[i] = 1;
+						chip.key[i] = 1;
 					}
 				}
-			} else if (event.type ==SDL_Keyup) {
+			} else if (event.type ==SDL_KEYUP) {
 
 				SDL_Keycode key = event.key.keysym.sym;
 
 				for (int i = 0; i < 16; i++) {
 					if (key == keymap[i]) {
-						chip8.key[i] = 0;
+						chip.key[i] = 0;
 					}
 				}
 			}
@@ -99,20 +98,22 @@ int main(int argc, char *argv[]) {
 
 		if (chip.draw) {
 			int pixel_size = 10;
+			SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+			SDL_RenderClear(renderer);
 
 			for (int i = 0; i < 32; i++) {
 				for (int j = 0; j < 64; j++) {
 
 					SDL_Rect pixel = {
-						.h = pixel_size;
-						.w = pixel_size;
-						.x = i * 10;
-						.y = j * 10;
+						.h = pixel_size,
+						.w = pixel_size,
+						.x = j * 10,
+						.y = i * 10,
 					};
 					if (chip.display[i][j] == 1) {
-						SDL_SetRenderDrawColor(renderer, 0,0,0, 255);
-					} else {
 						SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+					} else {
+						SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 					}
 
 					SDL_RenderFillRect(renderer, &pixel); 
@@ -123,8 +124,8 @@ int main(int argc, char *argv[]) {
 			chip.draw = false;
 		}
 
-		if (chip.delay_timer > 0) { chip.delay_timer-- };
-		if (chip.sound_timer > 0) { chip.sound_timer-- };
+		if (chip.delay_timer > 0) { chip.delay_timer--; };
+		if (chip.sound_timer > 0) { chip.sound_timer--; };
 
 		SDL_Delay(16);
 	}	

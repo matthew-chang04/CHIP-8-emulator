@@ -16,17 +16,17 @@ class Chip8 {
 		std::array<uint16_t, 16> stack;
 		uint16_t sp;
 
-		uint8_t delay_timer;
-		uint8_t sound_timer;
-
 	public:
 		bool draw;
 
-		std::array<std::array<uint8_t, 32>, 64> display;
+		std::array<std::array<uint8_t, 64>, 32> display;
 		std::array<uint8_t, 16> key;
 
-		bool loadProgram(std::string&);
+		bool loadProgram(const std::string&);
 		Chip8();
 		void emulationCycle();
+
+		uint8_t delay_timer;
+		uint8_t sound_timer;
 };
 

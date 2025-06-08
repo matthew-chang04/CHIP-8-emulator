@@ -25,8 +25,7 @@ unsigned char chip8_fontset[80] =
   0xF0, 0x80, 0xF0, 0x80, 0x80  // F
 };
 
-Chip8::Chip8() 
-	: memory{}, stack{}, V{}, key{}, delay_timer{60}, sound_timer{60}, opcode{}, sp{}, I{}, pc{0x200}, draw{false}
+Chip8::Chip8()	: memory{}, stack{}, V{}, key{}, delay_timer{60}, sound_timer{60}, opcode{}, sp{}, I{}, pc{0x200}, draw{false}
 {
 	for (int i = 0; i < 32; i++) {
 		display[i].fill(0);
@@ -66,6 +65,7 @@ void Chip8::emulationCycle()
 					sp--;	
 					break;
 			}
+			break;
 		case 0x1000:
 			pc = opcode & 0x0FFF;
 			break;
@@ -170,8 +170,6 @@ void Chip8::emulationCycle()
 
 		case 0xB000:
 			pc = (opcode & 0x0FFF) + V[0];
-
-			pc += 2;
 			break;
 
 		case 0xC000:
@@ -205,8 +203,8 @@ void Chip8::emulationCycle()
 
 					if ((spriteRow & (0x80 >> col)) != 0) {
 
-						int xPix = xPos + col;
-						int yPix = yPos + row;
+						int xPix = (xPos + col) % 64;
+						int yPix = (yPos + row) % 32;
 
 						if (display[yPix][xPix] == 1) {
 							V[0xF] = 1;
@@ -224,7 +222,7 @@ void Chip8::emulationCycle()
 		case 0xE000:
 			switch(opcode & 0x00F0) {
 				case 0x0090:
-					if (V[x] & 0x000F) {
+					if (key[V[x]]) {
 						pc += 4;
 					} else {
 						pc += 2;
@@ -232,7 +230,7 @@ void Chip8::emulationCycle()
 					break;
 
 				case 0x00A0:	
-					if (!(V[x] & 0x000F)) {
+					if (!key[V[x]]) {
 						pc += 4;
 					} else {
 						pc += 2;
@@ -297,7 +295,7 @@ void Chip8::emulationCycle()
 	}
 };
 
-bool Chip8::loadProgram(std::string& file) 
+bool Chip8::loadProgram(const std::string& file) 
 {
 	std::ifstream game(file, std::ios::binary | std::ios::ate);
 	if (!game.is_open()) return false;
@@ -307,7 +305,10 @@ bool Chip8::loadProgram(std::string& file)
 
 	if (size > 4096 - 0x200) return false;
 
-	game.read(reinterpret_cast<char*>(memory.data() + 0x200), size);
+	if (!game.read(reinterpret_cast<char*>(memory.data() + 0x200), size)) {
+		return false;
+	}
+
 	return true;
 }
 
