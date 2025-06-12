@@ -61,8 +61,8 @@ void Chip8::emulationCycle()
 					break;
 
 				case 0x000E:	
-					pc = stack[sp];
-					sp--;	
+					sp--;
+					pc = stack[sp];	
 					break;
 			}
 			break;
@@ -152,6 +152,7 @@ void Chip8::emulationCycle()
 					break;
 			}
 			pc += 2;
+			break;
 
 		case 0x9000:
 
