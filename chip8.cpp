@@ -65,6 +65,8 @@ void Chip8::emulationCycle()
 					pc = stack[sp];	
 					break;
 			}
+
+			pc += 2;
 			break;
 		case 0x1000:
 			pc = opcode & 0x0FFF;
