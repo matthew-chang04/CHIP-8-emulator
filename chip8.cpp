@@ -25,7 +25,7 @@ unsigned char chip8_fontset[80] =
   0xF0, 0x80, 0xF0, 0x80, 0x80  // F
 };
 
-Chip8::Chip8()	: memory{}, stack{}, V{}, key{}, delay_timer{60}, sound_timer{60}, opcode{}, sp{}, I{}, pc{0x200}, draw{false}
+Chip8::Chip8()	: memory{}, stack{}, V{}, key{}, delay_timer{60}, sound_timer{60}, opcode{}, sp{}, I{}, pc{0x200}, draw{true}
 {
 	for (int i = 0; i < 32; i++) {
 		display[i].fill(0);
@@ -36,6 +36,8 @@ Chip8::Chip8()	: memory{}, stack{}, V{}, key{}, delay_timer{60}, sound_timer{60}
 		memory[mc] = chip8_fontset[i];
 		mc++;
 	}
+
+	srand time(NULL);
 }
 
 void Chip8::emulationCycle() 
@@ -149,7 +151,7 @@ void Chip8::emulationCycle()
 					V[x] = V[y] - V[x];
 					break;
 				case 0x000E:
-					V[0xF] = ((V[x] & 0x80) == 0x80) ? 1 : 0;
+					V[0xF] = ((V[x] & 0x80) == 0x80) ? 0 : 1;
 					V[x] = V[x] << 1;
 					break;
 			}
@@ -182,15 +184,14 @@ void Chip8::emulationCycle()
 			std::uniform_int_distribution<> dist(0,255);
 
 			uint8_t num = static_cast<uint8_t>(dist(gen));
-			unsigned int NN = opcode & 0x00FF;
-
-			V[x] = num & NN;
+		
+			V[x] = num & n;
 			}
 			pc += 2;
 			break;
 
 		case 0xD000:
-			{
+			
 			uint8_t N = (opcode & 0x000F);
 
 			uint8_t xPos = V[x];
@@ -217,7 +218,7 @@ void Chip8::emulationCycle()
 					}	
 				}
 			}
-			}
+			
 			draw = true;
 			pc += 2;
 			break;
