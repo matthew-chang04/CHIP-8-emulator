@@ -36,14 +36,13 @@ Chip8::Chip8()	: memory{}, stack{}, V{}, key{}, delay_timer{60}, sound_timer{60}
 		memory[mc] = chip8_fontset[i];
 		mc++;
 	}
-
-	srand time(NULL);
 }
 
 void Chip8::emulationCycle() 
 {
 	opcode = memory[pc] << 8 | memory[pc+1];
 
+	std::cout << opcode << " ";
 	// declare commonly used parts of the opcode
 	uint8_t x = (opcode & 0x0F00) >> 8;
 	uint8_t y = (opcode & 0x00F0) >> 4;
@@ -151,7 +150,7 @@ void Chip8::emulationCycle()
 					V[x] = V[y] - V[x];
 					break;
 				case 0x000E:
-					V[0xF] = ((V[x] & 0x80) == 0x80) ? 0 : 1;
+					V[0xF] = ((V[x] & 0x80) == 0x80) ? 1 : 0;
 					V[x] = V[x] << 1;
 					break;
 			}
@@ -191,7 +190,7 @@ void Chip8::emulationCycle()
 			break;
 
 		case 0xD000:
-			
+			{
 			uint8_t N = (opcode & 0x000F);
 
 			uint8_t xPos = V[x];
@@ -218,7 +217,8 @@ void Chip8::emulationCycle()
 					}	
 				}
 			}
-			
+			}
+
 			draw = true;
 			pc += 2;
 			break;
@@ -247,26 +247,51 @@ void Chip8::emulationCycle()
 			switch(opcode & 0x00FF) {
 				case 0x0007:
 					V[x] = delay_timer;
+					pc += 2;
 					break;
 
 				case 0x000A:
-					V[x] = sound_timer;
+					{
+					bool keyPressed = false;
+
+					for (int k = 0; k < 16; k++) {
+						if (key[k] == 1) {
+							V[x] = k;
+							keyPressed = true;
+							break;
+						}
+					}
+					
+					if (!keyPressed) {
+						return;
+					}
+					pc += 2;
+					}
+
 					break;
 
 				case 0x0015:
 					delay_timer = V[x];
+
+					pc += 2;
 					break;
 
 				case 0x0018:
 					sound_timer = V[x];
+
+					pc += 2;
 					break;
 
 				case 0x001E:
 					I += V[x];
+
+					pc += 2;
 					break;
 
 				case 0x0029:	
 					I = 0x50 + (V[x] & 0x0F) * 5;
+
+					pc += 2;
 					break;
 
 				case 0x0033:
@@ -277,13 +302,14 @@ void Chip8::emulationCycle()
 					memory[I + 1] = (val / 10) % 10;
 					memory[I + 2] = val % 10;
 					}
-
+					pc += 2;
 					break;
 
 				case 0x0055:					
 					for (int i = 0; i <= x; i++) {
 						memory[I + i] = V[i];
 					}
+					pc += 2;
 					break;
 
 				case 0x0065:
@@ -291,10 +317,10 @@ void Chip8::emulationCycle()
 					for (int i = 0; i <= x; i++) {
 						V[i] = memory[I + i];
 					}
+					pc += 2;
 					break;
 			}
 
-			pc += 2;
 			break;
 	}
 };
@@ -302,7 +328,7 @@ void Chip8::emulationCycle()
 bool Chip8::loadProgram(const std::string& file) 
 {
 	std::ifstream game(file, std::ios::binary | std::ios::ate);
-	if (!game.is_open()) return false;
+	if (!game) return false;
 
 	std::streamsize size = game.tellg();
 	game.seekg(0, std::ios::beg);

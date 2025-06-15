@@ -4,7 +4,7 @@
 #include <string>
 
 
-#include "chip8.cpp"
+#include "chip8.h"
 
 
 uint8_t keymap[] = {
@@ -77,13 +77,16 @@ int main(int argc, char *argv[]) {
 			if (event.type == SDL_QUIT) {
 				return 0;
 			} else if (event.type == SDL_KEYDOWN) {
+
+				std::cout << "a key was pressed";
 				SDL_Keycode key = event.key.keysym.sym;
+				std::cout << key;
 				for (int i = 0; i < 16; i++) {
 					if (key == keymap[i]) {
 						chip.key[i] = 1;
 					}
 				}
-			} else if (event.type ==SDL_KEYUP) {
+			} else if (event.type == SDL_KEYUP) {
 
 				SDL_Keycode key = event.key.keysym.sym;
 
