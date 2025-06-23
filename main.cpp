@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
 
 	if (argc != 2) {
 		std::cout << "ERROR: Usage: ./run <filename>";
-		return -2;
+		return 1;
 	}
 	
 	// Set up chip and load specified file to memory
@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
 	std::string program = argv[1];
 	if (!chip.loadProgram(program)) { 
 		std::cout << "ERROR: " << program << " not recognised";
-		return -1;
+		return 1;
 	}
 
 	// SDL display setup
@@ -78,9 +78,7 @@ int main(int argc, char *argv[]) {
 				return 0;
 			} else if (event.type == SDL_KEYDOWN) {
 
-				std::cout << "a key was pressed";
 				SDL_Keycode key = event.key.keysym.sym;
-				std::cout << key;
 				for (int i = 0; i < 16; i++) {
 					if (key == keymap[i]) {
 						chip.key[i] = 1;
@@ -130,7 +128,7 @@ int main(int argc, char *argv[]) {
 		if (chip.delay_timer > 0) { chip.delay_timer--; };
 		if (chip.sound_timer > 0) { chip.sound_timer--; };
 
-		SDL_Delay(16);
+		// SDLDelay(16);
 	}	
 }
 

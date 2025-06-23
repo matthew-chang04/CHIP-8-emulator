@@ -42,7 +42,6 @@ void Chip8::emulationCycle()
 {
 	opcode = memory[pc] << 8 | memory[pc+1];
 
-	std::cout << opcode << " ";
 	// declare commonly used parts of the opcode
 	uint8_t x = (opcode & 0x0F00) >> 8;
 	uint8_t y = (opcode & 0x00F0) >> 4;
@@ -283,8 +282,8 @@ void Chip8::emulationCycle()
 					break;
 
 				case 0x001E:
+					V[0xF] = (I + V[x] > 0xFFF) ? 1 : 0;
 					I += V[x];
-
 					pc += 2;
 					break;
 
@@ -302,6 +301,7 @@ void Chip8::emulationCycle()
 					memory[I + 1] = (val / 10) % 10;
 					memory[I + 2] = val % 10;
 					}
+
 					pc += 2;
 					break;
 
