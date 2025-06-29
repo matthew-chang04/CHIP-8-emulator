@@ -99,25 +99,21 @@ int main(int argc, char *argv[]) {
 
 		if (chip.draw) {
 			int pixel_size = 10;
-			SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 			SDL_RenderClear(renderer);
 
 			for (int i = 0; i < 32; i++) {
 				for (int j = 0; j < 64; j++) {
-
-					SDL_Rect pixel = {
-						.h = pixel_size,
-						.w = pixel_size,
-						.x = j * 10,
-						.y = i * 10,
-					};
 					if (chip.display[i][j] == 1) {
-						SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-					} else {
-						SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-					}
 
-					SDL_RenderFillRect(renderer, &pixel); 
+						SDL_Rect pixel; 
+						pixel.h = pixel_size;
+						pixel.w = pixel_size;
+						pixel.x = j * 10;
+						pixel.y = i * 10;
+						SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+						SDL_RenderFillRect(renderer, &pixel);
+					}
 				}
 			}
 
@@ -128,7 +124,7 @@ int main(int argc, char *argv[]) {
 		if (chip.delay_timer > 0) { chip.delay_timer--; };
 		if (chip.sound_timer > 0) { chip.sound_timer--; };
 
-		// SDLDelay(16);
+		SDL_Delay(2);
 	}	
 }
 
