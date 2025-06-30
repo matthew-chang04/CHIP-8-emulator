@@ -20,6 +20,8 @@
 </ul>
 
 ## Build
-
+<p>
+  Dependencies
+</p>
 ```bash
 git clone https://github.com/matthew-chang04/CHIP-8-emulator
