@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"/Users/matthewchang/CHIP-8-emulator/build/cmake_install.cmake"
+	],
+	"Parallel" : false
+}
