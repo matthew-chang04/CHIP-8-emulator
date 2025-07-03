@@ -16,12 +16,16 @@
   <li>
     <a href="https://en.wikipedia.org/wiki/CHIP-8"> Wikipedia Chip-8 Specifications
   </li>
-    <a href="https://github.com/kripod/chip8-roms"> kripod's chip-8 ROM collection repo
+  <li>
+   <a href="https://github.com/kripod/chip8-roms"> kripod's chip-8 ROM collection repo
+  </li>
 </ul>
 
 ## Build
 <p>
-  Dependencies
+  Dependencies (Downloads for MacOS with homebrew)
 </p>
+```bash
+brew install sdl2
 ```bash
 git clone https://github.com/matthew-chang04/CHIP-8-emulator
