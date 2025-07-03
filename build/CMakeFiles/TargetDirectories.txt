@@ -1,3 +1,0 @@
-/Users/matthewchang/CHIP-8-emulator/build/CMakeFiles/CHIP-8-Emulator.dir
-/Users/matthewchang/CHIP-8-emulator/build/CMakeFiles/edit_cache.dir
-/Users/matthewchang/CHIP-8-emulator/build/CMakeFiles/rebuild_cache.dir
