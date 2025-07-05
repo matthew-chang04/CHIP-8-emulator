@@ -23,9 +23,23 @@
 
 ## Build
 <p>
-  Dependencies (Downloads for MacOS with homebrew)
+  Dependencies
 </p>
+
 ```bash
 brew install sdl2
+brew install cmake
+```
+
+In desired project directory:
 ```bash
 git clone https://github.com/matthew-chang04/CHIP-8-emulator
+mkdir build && cd build
+cmake ..
+make
+```
+
+## Run
+
+Now enjoy! I've included some public ROMs I used for testing in the roms directory. The above commands will create a ```CHIP-8-Emulator``` executable.
+Remember: The Chip 8 Controls are mapped to the left part of the keyboard. 
