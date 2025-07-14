@@ -2,8 +2,6 @@
 #include <chrono>
 #include </opt/homebrew/include/SDL2/SDL.h>
 #include <string>
-
-
 #include "chip8.h"
 
 
@@ -37,7 +35,7 @@ int main(int argc, char *argv[]) {
 	
 	// Set up chip and load specified file to memory
 	Chip8 chip; 
-
+	
 	std::string program = argv[1];
 	if (!chip.loadProgram(program)) { 
 		std::cout << "ERROR: " << program << " not recognised";
@@ -63,8 +61,7 @@ int main(int argc, char *argv[]) {
 		return -4;
 
 	}
-
-
+	
 	while(true) {
 
 		chip.emulationCycle();
@@ -95,36 +92,34 @@ int main(int argc, char *argv[]) {
 				}
 			}
 		}
-
-
-		if (chip.draw) {
-			int pixel_size = 10;
-			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-			SDL_RenderClear(renderer);
-
-			for (int i = 0; i < 32; i++) {
-				for (int j = 0; j < 64; j++) {
-					if (chip.display[i][j] == 1) {
-
-						SDL_Rect pixel; 
-						pixel.h = pixel_size;
-						pixel.w = pixel_size;
-						pixel.x = j * 10;
-						pixel.y = i * 10;
-						SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-						SDL_RenderFillRect(renderer, &pixel);
-					}
+		int pixel_size = 10;
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+		SDL_RenderClear(renderer);
+		for (int i = 0; i < 32; i++) {
+			for (int j = 0; j < 64; j++) {
+				if (chip.display[i][j] == 1) {
+					SDL_Rect pixel; 
+					pixel.h = pixel_size;
+					pixel.w = pixel_size;
+					pixel.x = j * 10;
+					pixel.y = i * 10;
+					SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+					SDL_RenderFillRect(renderer, &pixel);
 				}
 			}
-
-			SDL_RenderPresent(renderer);
-			chip.draw = false;
 		}
 
+		SDL_RenderPresent(renderer);
+		chip.draw = false;
+
+		const int CYCLES_PER_FRAME = 10;
+		const int FRAME_DELAY_MS = 1000 / 60;
+
+		
 		if (chip.delay_timer > 0) { chip.delay_timer--; };
 		if (chip.sound_timer > 0) { chip.sound_timer--; };
 
-		SDL_Delay(2);
+		SDL_Delay(1);
 	}	
 }
 
