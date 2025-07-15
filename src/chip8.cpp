@@ -25,7 +25,7 @@ unsigned char chip8_fontset[80] =
   0xF0, 0x80, 0xF0, 0x80, 0x80  // F
 };
 
-Chip8::Chip8()	: memory{}, stack{}, V{}, key{}, delay_timer{60}, sound_timer{60}, opcode{}, sp{}, I{}, pc{0x200}, draw{true}
+Chip8::Chip8()	: memory{}, stack{}, V{}, key{}, delay_timer{60}, sound_timer{60}, opcode{}, sp{}, I{}, pc{0x200}, draw{true}, waitingForKey{false}, keyIdx{0}
 {
 	for (int i = 0; i < 32; i++) {
 		display[i].fill(0);
@@ -40,6 +40,20 @@ Chip8::Chip8()	: memory{}, stack{}, V{}, key{}, delay_timer{60}, sound_timer{60}
 
 void Chip8::emulationCycle() 
 {
+	//Handle if waiting for key input (for FX0A)
+	if (waitingForKey) {
+		for(int i = 0; i < key.size(); i++) {
+			if (key[i]) {
+				V[keyIdx] = i;
+				waitingForKey = false;
+				pc += 2;
+				key[i] = 0;
+				break;
+			}
+		}
+		return;
+	}
+	
 	opcode = memory[pc] << 8 | memory[pc+1];
 
 	// declare commonly used parts of the opcode
@@ -135,8 +149,7 @@ void Chip8::emulationCycle()
 					V[0xF] = (V[x] < temp) ? 1 : 0;
 					break;
 				case 0x0005:
-					temp = V[x];
-					V[0xF] = (V[y] > V[x]) ? 1 : 0;
+					V[0xF] = (V[x] >= V[y]) ? 1 : 0;
 					V[x] -= V[y];
 					break;
 				case 0x0006:
@@ -144,8 +157,7 @@ void Chip8::emulationCycle()
 					V[x] = V[x] >> 1;
 					break;
 				case 0x0007:
-					temp = V[x];
-					V[0xF] = (V[x] > V[y]) ? 1 : 0;
+					V[0xF] = (V[y] >= V[x]) ? 1 : 0;
 					V[x] = V[y] - V[x];
 					break;
 				case 0x000E:
@@ -250,23 +262,8 @@ void Chip8::emulationCycle()
 					break;
 
 				case 0x000A:
-					{
-					bool keyPressed = false;
-
-					for (int k = 0; k < 16; k++) {
-						if (key[k] == 1) {
-							V[x] = k;
-							keyPressed = true;
-							break;
-						}
-					}
-					
-					if (!keyPressed) {
-						return;
-					}
-					pc += 2;
-					}
-
+					waitingForKey = true;
+					keyIdx = (0x0F00 & opcode);
 					break;
 
 				case 0x0015:

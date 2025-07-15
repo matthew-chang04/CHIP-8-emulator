@@ -1,9 +1,8 @@
 #include <iostream>
 #include <chrono>
-#include </opt/homebrew/include/SDL2/SDL.h>
+#include <SDL2/SDL.h>
 #include <string>
 #include "chip8.h"
-
 
 uint8_t keymap[] = {
 	SDLK_x,
@@ -62,6 +61,10 @@ int main(int argc, char *argv[]) {
 
 	}
 	
+	const int CYCLES_PER_FRAME = 10;
+	const int FRAME_DELAY_MS = 1000 / 60;
+	auto lastTime = std::chrono::high_resolution_clock::now();
+
 	while(true) {
 
 		chip.emulationCycle();
@@ -79,6 +82,7 @@ int main(int argc, char *argv[]) {
 				for (int i = 0; i < 16; i++) {
 					if (key == keymap[i]) {
 						chip.key[i] = 1;
+						break;
 					}
 				}
 			} else if (event.type == SDL_KEYUP) {
@@ -88,6 +92,7 @@ int main(int argc, char *argv[]) {
 				for (int i = 0; i < 16; i++) {
 					if (key == keymap[i]) {
 						chip.key[i] = 0;
+						break;
 					}
 				}
 			}
@@ -101,8 +106,8 @@ int main(int argc, char *argv[]) {
 					SDL_Rect pixel; 
 					pixel.h = pixel_size;
 					pixel.w = pixel_size;
-					pixel.x = j * 10;
-					pixel.y = i * 10;
+					pixel.x = j * pixel_size;
+					pixel.y = i * pixel_size; 
 					SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 					SDL_RenderFillRect(renderer, &pixel);
 				}
@@ -112,12 +117,14 @@ int main(int argc, char *argv[]) {
 		SDL_RenderPresent(renderer);
 		chip.draw = false;
 
-		const int CYCLES_PER_FRAME = 10;
-		const int FRAME_DELAY_MS = 1000 / 60;
+		auto currentTime = std::chrono::high_resolution_clock::now();
+		auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastTime).count();
 
-		
-		if (chip.delay_timer > 0) { chip.delay_timer--; };
-		if (chip.sound_timer > 0) { chip.sound_timer--; };
+		if (elapsed >= FRAME_DELAY_MS) {			
+			if (chip.delay_timer > 0) { chip.delay_timer--; };
+			if (chip.sound_timer > 0) { chip.sound_timer--; };
+			lastTime = currentTime;
+		}
 
 		SDL_Delay(1);
 	}	

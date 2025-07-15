@@ -16,6 +16,9 @@ class Chip8 {
 		std::array<uint16_t, 16> stack;
 		uint16_t sp;
 
+		bool waitingForKey;
+		uint8_t keyIdx;
+
 	public:
 		bool draw;
 
